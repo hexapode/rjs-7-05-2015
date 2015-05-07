@@ -1,0 +1,125 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <style type="text/css">
+
+    </style>    
+
+  </head>
+  <body>
+    <canvas id='canvas' width=200 height=200>
+      
+    </canvas>
+  
+    <script type="text/javascript">
+     
+      var canvas = document.getElementById('canvas');
+
+      var ctx = canvas.getContext('2d');
+
+      var img = new Image();
+      img.src = 'original.jpeg';
+
+      var fs = require('fs');
+
+      img.onload = function () {
+        ctx.drawImage(img, 0, 0, 200, 200);
+
+        var noise = generateNoise(200,200);
+
+        ctx.globalAlpha = 0.07;
+        ctx.drawImage(noise, 0 ,0);
+
+        var b64 = canvas.toDataURL();
+
+        var imgBuffer = b64imagetobuffer(b64);
+        fs.writeFile('demo.png', imgBuffer.data, function() {});
+
+        
+        var babyface = new Image();
+        babyface.src = 'baby.png';
+        babyface.onload = function () {
+          ctx.globalAlpha = 0.5;
+          ctx.drawImage(babyface,35,25,110,110);
+          var img64 = canvas.toDataURL("png");
+          var imgBuffer = b64imagetobuffer(img64);
+
+          fs.writeFile('resultbaby.png', imgBuffer.data, function(err) {});
+        }
+      } 
+      
+
+      function generateNoise(width, height) {
+        var c = document.createElement('canvas');
+        var ctx = c.getContext('2d');
+        for (var x = 0; x < width; ++x) {
+          for (var y = 0; y < height; ++y) {
+            ctx.fillStyle = 'rgba(' + (Math.random() * 255 | 0) + ','+ (Math.random() * 255 | 0) + ','+ (Math.random() * 255 | 0) + ')';
+            ctx.fillRect(x,y,1,1);
+          }
+        }
+        return c;
+      }
+      
+      function b64imagetobuffer(dataString) {
+        var matches = dataString.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/),
+        response = {};
+
+        if (matches.length !== 3) {
+          return new Error('Invalid input string');
+        }
+
+        response.type = matches[1];
+        response.data = new Buffer(matches[2], 'base64');
+
+        return response;
+      }
+
+    </script>
+    
+    <iframe src="http://doulcet.fr/iframe.html">
+      
+    </iframe>
+  </body>
+</html>
+
+<!--
+
+    Live code aid
+
+    // a function to generate noise
+      function generateNoise(width, height) {
+        var c = document.createElement('canvas');
+        var ctx = c.getContext('2d');
+        for (var x = 0; x < width; ++x) {
+          for (var y = 0; y < height; ++y) {
+            ctx.fillStyle = 'rgba(' + (Math.random() * 255 | 0) + ','+ (Math.random() * 255 | 0) + ','+ (Math.random() * 255 | 0) + ')';
+            ctx.fillRect(x,y,1,1);
+          }
+        }
+        return c;
+      }
+
+
+      // a function to generate a image buffer from B64 datas
+      /**
+      [cheatsheet]
+        var imgBuffer = b64imagetobuffer(img64);
+
+        fs.writeFile('result.png', imgBuffer.data, function(err) {});
+      */
+      function b64imagetobuffer(dataString) {
+        var matches = dataString.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/),
+        response = {};
+
+        if (matches.length !== 3) {
+          return new Error('Invalid input string');
+        }
+
+        response.type = matches[1];
+        response.data = new Buffer(matches[2], 'base64');
+
+        return response;
+      }
+
+-->
